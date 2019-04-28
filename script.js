@@ -1,11 +1,10 @@
 var dataP = d3.csv("DataBreachData.csv");
 
 
-
 dataP.then(function(d)
 {
   createSvg(d)
-  getSensitivities(d)
+  conversion(d)
 }
 ,function(err)
 {
@@ -13,22 +12,58 @@ dataP.then(function(d)
 });
 
 
-var getSensitivities = function(data)
+var convertToHierarchy = function(data,attribute,value)
 {
-  console.log("hi")
-  data.forEach(function(d,i)
+  if (attribute == "entity"){return leafNodes(data)}
+
+  else
   {
-
-
-
-
-    if(i!=0)
-  })
+    return {
+      name:value,
+      children:listUp(data,attribute)
+    }
+  }
 }
 
 
+var listUp = function(data,attribute)
+{
+  lists = {}
+  data.forEach(function(d)
+  {
+    if (lists.hasOwnProperty(d[attribute]) == false)
+    {
+      lists[d[attribute]]=[d];
+    }
+    else
+    {
+      lists[d[attribute]].push(d)
+    }
+  })
+  console.log(lists)
+}
 
+var conversion = function(data)
+{
+  var children = listUp(data,"DATA SENSITIVITY")
+  {
+    children.forEach(function(d))
 
+  }
+}
+
+var leafNodes = function(data)
+{
+  var leaves = data.map(function(d)
+  {
+    return {
+      entity:d.Entity,
+      recordsLost:d["records lost"],
+      story:d.story
+    }
+  })
+return leaves
+}
 
 var createSvg = function(data)
 {
