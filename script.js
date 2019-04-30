@@ -3,9 +3,10 @@ var dataP = d3.csv("DataBreachData.csv");
 
 dataP.then(function(d)
 {
-  //createSvg(d)
+
   heirarchy =
   {
+
     name:"breaches",
     children:conversion(d)
 
@@ -134,58 +135,108 @@ var conversion = function(data)
   return children
 }
 
+
 var createSvg = function(data)
 {
   body = d3.select("body")
   svg = body.append("svg")
-            .attr("width",800)
-            .attr("height",800)
+            .attr("width",700)
+            .attr("height",700)
             .style("display","block")
             .style("margin","auto")
-  svg.append('g')
-  svg.append('g')
+            .style("background-color","red")
   svg.append('g')
 
 }
 
 
 
+
+
+
+
+
+
+
+
+
 var drawCircle = function(data)
 {
-  var root = d3.hierarchy(data)
-  var pack = d3.pack(root)
-    .size([800,800])
-    .padding(10)
-  var hierarchy = d3.hierarchy(root)
-    .sum(function(d){return d.value})
-    .sort(function(a,b){b.value-a.value})
+  var svg = d3.select("svg"),
+      margin = 20,
+      diameter = +svg.attr("width"),
+      g = svg.append("g")
+      .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+
   var color = d3.scaleLinear()
-    .domain([0,5])
-    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-
-  var svg = d3.select("svg g")
-    .style("display", "block")
-    .style("margin", "0 -14px")
-    .style("width", "calc(100% + 28px)")
-    .style("height", "auto")
-    .style("background", color(0))
-    .style("cursor", "pointer")
-    .on("click", () => zoom(root));
+  .domain([4,-1])
+  .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+  .interpolate(d3.interpolateHcl)
 
 
+  var pack = d3.pack()
+  .size([diameter - margin,diameter - margin])
+    .padding(2);
+
+  var root = d3.hierarchy(data)
+               .sum(function(d){return parseInt(d.value);})
+               .sort(function(a,b){ return b.value - a.value;});
+  console.log(root)
+
+  var focus = root,
+    nodes = pack(root).descendants(),
+    view;
 
 
+  var circle = g.selectAll("circle g")
+    .data(nodes)
+    .enter()
+    .append("circle")
+    .attr("class",function(d) {return d.parent ? d.children ? "node":"node node--leaf" : "node node--leaf";})
+    .style("fill",function(d){return d.children ? color(d.depth):null})
+    .on("click",function(d){if(focus!= d) zoom(d), d3.event.stopPropagation();});
+
+  var text = g.selectAll("text")
+    .data(nodes)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+    .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
+    .text(function(d) { return d.data.name; });
+
+  var node = g.selectAll("circle,text");
+
+  svg.style("background",color(-1))
+    .on("click",function(){zoom(root);});
+
+  zoomTo([root.x, root.y,root.r *2 + margin]);
+
+  function zoom(d)
+  {
+    var focus0 = focus; focus = d;
+
+    var transition = d3.transition()
+      .duration(d3.event.altKey ? 7500 : 750)
+      .tween("zoom", function(d){
+        var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+                  return function(t) { zoomTo(i(t)); };
+                });
+
+    transition.selectAll("text")
+        .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+        .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+  }
 
 
-
-  var node = svg.append("g")
-        .selectAll("circle")
-        .data(root.descendants().slice(1))
-        .join("circle")
-        .attr("fill",d=>d.children ? color(d.depth):"white")
-        .attr("pointer-events", d=> !d.children ? "none":null)
-        .on("mouseover", function() { d3.select(this).attr("stroke", "#000"); })
-        .on("mouseout", function() { d3.select(this).attr("stroke", null); })
-        .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()));
+  function zoomTo(v)
+  {
+    var k = diameter / v[2]; view = v;
+    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    circle.attr("r", function(d) { return d.r * k; });
+  }
 
 }

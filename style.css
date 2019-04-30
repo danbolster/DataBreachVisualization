@@ -3,11 +3,21 @@ body
   background-color: tan;
 }
 
+svg
+{
+  background-color:orange;
+}
+
 rect
 {
   fill:cadetblue;
   opacity:.3;
   stroke: white;
+}
+
+circle
+{
+  opacity:2;
 }
 
 text {
