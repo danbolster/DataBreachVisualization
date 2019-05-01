@@ -12,6 +12,8 @@ dataP.then(function(d)
 
   }
   drawCircle(heirarchy)
+
+
 }
 ,function(err)
 {
@@ -62,13 +64,12 @@ var conversion = function(data)
   children.shift()
 
   //children is on top
-
   var children = children.map(function(d,i)
   {
     var list = listUp(d,"METHOD")
     var keys = Object.keys(list)
 
-    // is second
+
     var kiddoes = keys.map(function(d4)
     {
       var sectors = listUp(list[d4],"SECTOR")
@@ -86,7 +87,7 @@ var conversion = function(data)
             result2 =
 
             {
-              value:parseInt(d6["records lost"]),
+              value:(d6["records lost"]),
               entity:d6["Entity"],
               story:d6["story"]
 
@@ -112,7 +113,7 @@ var conversion = function(data)
       return result
     })
 
-
+    /*
     var kiddies = keys.map(function(d2)
     {
       result = {
@@ -121,14 +122,15 @@ var conversion = function(data)
       }
 
     return result
-    })
 
+    })
+    */
 
     result =
     {
 
     name:"sensitivity_" + (i+1),
-    children:kiddies
+    children:kiddoes
     }
     return result
   })
@@ -183,7 +185,6 @@ var drawCircle = function(data)
                .sum(function(d){return parseInt(d.value);})
                .sort(function(a,b){ return b.value - a.value;});
   console.log(root)
-
   var focus = root,
     nodes = pack(root).descendants(),
     view;
@@ -204,7 +205,8 @@ var drawCircle = function(data)
     .attr("class", "label")
     .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
     .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-    .text(function(d) { return d.data.name; });
+    .text(function(d) { return d.data.name; })
+    .attr("stroke","white");
 
   var node = g.selectAll("circle,text");
 
