@@ -8,6 +8,10 @@ svg
   background-color:orange;
 }
 
+#bar
+{
+  float: right;
+}
 rect
 {
   fill:cadetblue;
@@ -15,13 +19,24 @@ rect
   stroke: white;
 }
 
-circle
+circle;
 {
   opacity:.9;
 }
 
 text {
   pointer-events: none;
+  background-color: blue;
+}
+
+text span
+{
+  background-color: blue
+}
+
+p
+{
+  background-color: blue;
 }
 
 .grandparent text {

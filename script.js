@@ -11,7 +11,7 @@ dataP.then(function(d)
     children:conversion(d)
 
   }
-  createSvg()
+  createSvg("left")
   drawCircle(heirarchy)
 
 
@@ -139,16 +139,15 @@ var conversion = function(data)
 }
 
 
-var createSvg = function(data)
+var createSvg = function(side)
 {
   body = d3.select("body")
   svg = body.append("svg")
-            .attr("width",700)
-            .attr("height",700)
+            .attr("width",1000)
+            .attr("height",1000)
             .style("display","block")
-            .style("margin","auto")
-            .style("background-color","red")
-  svg.append('g')
+            .style("margin",side)
+
 
 }
 
@@ -174,13 +173,13 @@ var drawCircle = function(data)
 
   var color = d3.scaleLinear()
   .domain([4,-1])
-  .range(["hsl(0,100%,100%)", "hsl(100,0%,0%)"])
+  .range(["hsl(0,100%,100%)", "hsl(300,1%,1%)"])
   .interpolate(d3.interpolateHcl)
 
 
   var pack = d3.pack()
   .size([diameter - margin,diameter - margin])
-    .padding(10);
+    .padding(14);
 
   var root = d3.hierarchy(data)
                .sum(function(d)
@@ -191,19 +190,15 @@ var drawCircle = function(data)
                  {
 
                    str = str.replace(/,/g,"")
-                   console.log(str)
                    return parseInt(str)
                  }
 
 
 
                  return parseInt(d.value);
-
-
-
                })
+
                .sort(function(a,b){ return b.value - a.value;});
-  console.log(root)
   var focus = root,
     nodes = pack(root).descendants(),
     view;
@@ -215,7 +210,22 @@ var drawCircle = function(data)
     .append("circle")
     .attr("class",function(d) {return d.parent ? d.children ? "node":"node node--leaf" : "node node--leaf";})
     .style("fill",function(d){return d.children ? color(d.depth):"#696969";})
-    .on("click",function(d){if(focus!= d) zoom(d), d3.event.stopPropagation();});
+    .on("click",function(d){
+      if(d.parent!= null){console.log(d.depth)}
+      if(focus!= d) zoom(d), d3.event.stopPropagation();})
+    .on("mouseover",function(d)
+    {
+        d3.select(this.parent).select("text")
+        .text(function(d1)
+        {
+          console.log(d)
+          return d.value
+        })
+
+
+    })
+
+
 
   var text = g.selectAll("text")
     .data(nodes)
@@ -225,15 +235,21 @@ var drawCircle = function(data)
     .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
     .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
     .text(function(d) {
-      if(d.depth==6){return d.data.name + " accounts compromised " + d.value}
-      else
+      if(d.depth!=5)
       {
-        return d.data.name;}
-      })
-    .attr("fill","red");
+        return d.data.name;
+      }
+    })
+    .style("font-size","20pt")
+    .attr("fill","black")
 
+  var rect = g.selectAll("rect")
+      .data(nodes)
+      .enter()
+      .append("rect")
+      .attr("class", "box")
 
-  var node = g.selectAll("circle,text");
+  var node = g.selectAll("circle,text,rect");
 
   svg.style("background",color(-1))
     .on("click",function(){zoom(root);});
