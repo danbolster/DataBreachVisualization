@@ -11,6 +11,7 @@ dataP.then(function(d)
     children:conversion(d)
 
   }
+  createSvg()
   drawCircle(heirarchy)
 
 
@@ -88,7 +89,7 @@ var conversion = function(data)
 
             {
               value:(d6["records lost"]),
-              entity:d6["Entity"],
+              name:d6["Entity"],
               story:d6["story"]
 
             }
@@ -173,16 +174,34 @@ var drawCircle = function(data)
 
   var color = d3.scaleLinear()
   .domain([4,-1])
-  .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+  .range(["hsl(0,100%,100%)", "hsl(100,0%,0%)"])
   .interpolate(d3.interpolateHcl)
 
 
   var pack = d3.pack()
   .size([diameter - margin,diameter - margin])
-    .padding(2);
+    .padding(10);
 
   var root = d3.hierarchy(data)
-               .sum(function(d){return parseInt(d.value);})
+               .sum(function(d)
+               {
+
+                 var str = d["value"];
+                 if(typeof str != "undefined")
+                 {
+
+                   str = str.replace(/,/g,"")
+                   console.log(str)
+                   return parseInt(str)
+                 }
+
+
+
+                 return parseInt(d.value);
+
+
+
+               })
                .sort(function(a,b){ return b.value - a.value;});
   console.log(root)
   var focus = root,
@@ -195,7 +214,7 @@ var drawCircle = function(data)
     .enter()
     .append("circle")
     .attr("class",function(d) {return d.parent ? d.children ? "node":"node node--leaf" : "node node--leaf";})
-    .style("fill",function(d){return d.children ? color(d.depth):null})
+    .style("fill",function(d){return d.children ? color(d.depth):"#696969";})
     .on("click",function(d){if(focus!= d) zoom(d), d3.event.stopPropagation();});
 
   var text = g.selectAll("text")
@@ -205,8 +224,14 @@ var drawCircle = function(data)
     .attr("class", "label")
     .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
     .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-    .text(function(d) { return d.data.name; })
-    .attr("stroke","white");
+    .text(function(d) {
+      if(d.depth==6){return d.data.name + " accounts compromised " + d.value}
+      else
+      {
+        return d.data.name;}
+      })
+    .attr("fill","red");
+
 
   var node = g.selectAll("circle,text");
 
