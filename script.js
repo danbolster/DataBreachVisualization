@@ -11,7 +11,7 @@ dataP.then(function(d)
     children:conversion(d)
 
   }
-  createSvg("left")
+  createSvg()
   drawCircle(heirarchy)
 
 
@@ -130,7 +130,7 @@ var conversion = function(data)
     result =
     {
 
-    name:"sensitivity_" + (i+1),
+    name:"sensitivity_" +(i+1),
     children:kiddoes
     }
     return result
@@ -139,14 +139,16 @@ var conversion = function(data)
 }
 
 
-var createSvg = function(side)
+var createSvg = function()
 {
   body = d3.select("body")
   svg = body.append("svg")
             .attr("width",1000)
             .attr("height",1000)
             .style("display","block")
-            .style("margin",side)
+            .style("margin","auto")
+            .classed("graph","true")
+
 
 
 }
@@ -210,9 +212,31 @@ var drawCircle = function(data)
     .append("circle")
     .attr("class",function(d) {return d.parent ? d.children ? "node":"node node--leaf" : "node node--leaf";})
     .style("fill",function(d){return d.children ? color(d.depth):"#696969";})
-    .on("click",function(d){
-      if(d.parent!= null){console.log(d.depth)}
+    .on("click",function(d)
+    {
+      if(d.depth == 1){console.log("Sensitivity: " + d.data.name)}
+      else if(d.depth ==2){console.log("Method: " + d.data.name)
+      console.log(d.value)
+
+      }
+
+      else if(d.depth ==3){console.log("Sector: " + d.data.name)}
+      else if(d.depth ==4){console.log("Entity: " + d.data.name)
+      console.log(d.data.story)
+
+    }
+
+
+
+
+
+
+
+
+
+
       if(focus!= d) zoom(d), d3.event.stopPropagation();})
+
     .on("mouseover",function(d)
     {
         d3.select(this.parent).select("text")

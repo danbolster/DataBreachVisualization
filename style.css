@@ -8,9 +8,12 @@ svg
   background-color:orange;
 }
 
-#bar
+.graph
 {
-  float: right;
+}
+
+.chart
+{
 }
 rect
 {
