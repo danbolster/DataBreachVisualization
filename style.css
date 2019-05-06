@@ -6,6 +6,9 @@ body
 svg
 {
   background-color:orange;
+  float:right;
+  margin-right: 264px;
+  padding:0px;
 }
 
 .graph
@@ -78,7 +81,43 @@ rect.parent {
   fill: #bbb;
 }
 
-h1
+#information
+{
+  float:left;
+  display: block;
+  background-color: grey;
+  width: 500px;
+  height: 1000px;
+  margin-left: 600px;
+  padding: 0px;
+}
+
+#information h1
+{
+  font-size: 20pt;
+}
+
+#information h2
+{
+  font-size: 18pt;
+}
+
+#information h3
+{
+  font-size: 16pt;
+}
+
+#information h4
+{
+  font-size: 14pt;
+}
+
+#information h5
+{
+  font-size: 14pt;
+}
+
+#title
 {
   text-align: center;
 }

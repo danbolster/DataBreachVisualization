@@ -146,7 +146,7 @@ var createSvg = function()
             .attr("width",1000)
             .attr("height",1000)
             .style("display","block")
-            .style("margin","auto")
+          
             .classed("graph","true")
 
 
@@ -157,7 +157,54 @@ var createSvg = function()
 
 
 
+var traceParents = function(node)
+{
+  d3.select("#accounts")
+    .text("accounts compromised: " + node.value)
 
+
+  if(node.depth==4)
+  {
+    d3.select("#story")
+      .text("story: " + node.data.story)
+  }
+  else
+  {
+    d3.select("#story")
+      .text("story: ")
+  }
+
+  var depths = ["total","sensitivity","method","sector","company"]
+  var values = ["","","","",""]
+
+  while(node.parent != null)
+  {
+    values[node.depth] = node.data.name
+    //console.log(depths[node.depth] + ":" + node.data.name + " accounts compromised: " + node.value)
+    //console.log("#" + depths[node.depth])
+
+    var spot = d3.select("#" + depths[node.depth])
+                 .text(node.data.name)
+    node = node.parent
+
+
+  }
+
+  values.forEach(function(d,i)
+  {
+    d3.select("#" + depths[i])
+          .text(depths[i] + ": " + values[i])
+  })
+
+
+
+
+
+
+
+
+
+}
 
 
 
@@ -206,6 +253,7 @@ var drawCircle = function(data)
     view;
 
 
+
   var circle = g.selectAll("circle g")
     .data(nodes)
     .enter()
@@ -214,6 +262,8 @@ var drawCircle = function(data)
     .style("fill",function(d){return d.children ? color(d.depth):"#696969";})
     .on("click",function(d)
     {
+      traceParents(d)
+      /*
       if(d.depth == 1){console.log("Sensitivity: " + d.data.name)}
       else if(d.depth ==2){console.log("Method: " + d.data.name)
       console.log(d.value)
@@ -223,16 +273,7 @@ var drawCircle = function(data)
       else if(d.depth ==3){console.log("Sector: " + d.data.name)}
       else if(d.depth ==4){console.log("Entity: " + d.data.name)
       console.log(d.data.story)
-
-    }
-
-
-
-
-
-
-
-
+      */
 
 
       if(focus!= d) zoom(d), d3.event.stopPropagation();})
