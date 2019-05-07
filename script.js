@@ -143,8 +143,8 @@ var createSvg = function()
 {
   body = d3.select("body")
   svg = body.append("svg")
-            .attr("width",1000)
-            .attr("height",1000)
+            .attr("width",950)
+            .attr("height",950)
             .style("display","block")
           
             .classed("graph","true")
