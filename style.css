@@ -86,9 +86,8 @@ rect.parent {
   float:left;
   display: block;
   background-color: grey;
-  width: 500px;
+  width: 250px;
   height: 1000px;
-  margin-left: 100px;
   padding: 0px;
 }
 
